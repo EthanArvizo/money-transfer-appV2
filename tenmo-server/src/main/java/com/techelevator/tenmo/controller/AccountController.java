@@ -23,4 +23,8 @@ public class AccountController {
     public Account getAccountByUserId(@PathVariable int userId){
         return accountDao.getAccountById(userId);
     }
+    @GetMapping("/byAccount/{accountId}")
+    public Account getAccountByAccountId(@PathVariable int accountId){
+        return accountDao.getAccountByAccountId(accountId);
+    }
 }

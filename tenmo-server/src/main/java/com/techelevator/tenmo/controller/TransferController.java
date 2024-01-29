@@ -29,9 +29,5 @@ public class TransferController {
     public List<Transfer> getTransfersByAccountId(@PathVariable int accountId){
         return transferDao.getTransfersByAccountId(accountId);
     }
-    private void sendTransfer() {
-        Transfer transfer = new Transfer();
-        transfer.setTransferTypeId(2);
-        transfer.setTransferStatusId(2);
-    }
+
 }

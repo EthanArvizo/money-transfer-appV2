@@ -27,6 +27,29 @@ public class JdbcAccountDao implements AccountDao{
         }
         return account;
     }
+
+    @Override
+    public Account getAccountByAccountId(int accountId) {
+        Account account = null;
+        String sql = "SELECT account_id, user_id, balance FROM account WHERE account_id = ?";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql,accountId);
+            if (results.next()){
+                account = mapRowtoAccount(results);
+            }
+        }catch (CannotGetJdbcConnectionException e){
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+        return account;
+    }
+
+    @Override
+    public void updateBalances(Account account) {
+        String sql = "Update account SET balance = ? WHERE account_id = ?";
+        jdbcTemplate.update(sql,account.getBalance(),account.getAccountId());
+
+    }
+
     private Account mapRowtoAccount(SqlRowSet rs){
         Account account = new Account();
         account.setAccountId(rs.getInt("account_Id"));
