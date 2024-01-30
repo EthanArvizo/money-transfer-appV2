@@ -4,8 +4,10 @@ import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+@Component
 
 public class TransferService {
     private TransferDao transferDao;
@@ -26,7 +28,7 @@ public class TransferService {
             return "Transfer failed due to insufficient balance";
         }
     }
-    private boolean updateBalances(int accountFrom, int accountTo, BigDecimal amount){
+    public boolean updateBalances(int accountFrom, int accountTo, BigDecimal amount){
         Account accountFromInfo = accountDao.getAccountByAccountId(accountFrom);
         Account accountToInfo = accountDao.getAccountByAccountId(accountTo);
 

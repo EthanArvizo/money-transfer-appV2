@@ -20,16 +20,14 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
-    public Transfer createTransfer(Transfer transfer) {
+    public void createTransfer(Transfer transfer) {
         Transfer newTransfer = null;
         String sql = "INSERT INTO transfer (transfer_type_id,transfer_status_id, account_from, account_to, amount)VALUES (?, ?, ?, ?, ?)";
         try {
-            int newTransferId =jdbcTemplate.update(sql,transfer.getTransferTypeId(), transfer.getTransferStatusId(),transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
-            newTransfer = getTransferById(newTransferId);
+            jdbcTemplate.update(sql,transfer.getTransferTypeId(), transfer.getTransferStatusId(),transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
         }catch (CannotGetJdbcConnectionException e){
             throw new DaoException("Unable to connect to server or database", e);
         }
-        return newTransfer;
     }
 
     @Override
@@ -61,6 +59,34 @@ public class JdbcTransferDao implements TransferDao{
             throw new DaoException("Unable to connect to server or database", e);
         }
         return transfers;
+    }
+
+    @Override
+    public void createTransferRequest(Transfer transferRequest) {
+        Transfer newTransfer = null;
+        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)"+
+                "VALUES (?, ?, ?, ?, ?)";
+        int transferTypeId = 1;
+        int transferStatusId = 1;
+        try {
+           jdbcTemplate.update(sql,transferTypeId, transferStatusId, transferRequest.getAccountFrom(), transferRequest.getAccountTo(), transferRequest.getAmount());
+        }catch (CannotGetJdbcConnectionException e){
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+    }
+
+    @Override
+    public void createTransferSend(Transfer transferSend) {
+        Transfer newTransfer = null;
+        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)"+
+                "VALUES (?, ?, ?, ?, ?)";
+        int transferTypeId = 2;
+        int transferStatusId = 2;
+        try {
+            jdbcTemplate.update(sql,transferTypeId, transferStatusId, transferSend.getAccountFrom(), transferSend.getAccountTo(), transferSend.getAmount());
+        }catch (CannotGetJdbcConnectionException e){
+            throw new DaoException("Unable to connect to server or database", e);
+        }
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rs){
