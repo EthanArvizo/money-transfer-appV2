@@ -62,6 +62,11 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
+    public List<Transfer> getTransfersByUserId(int userId) {
+        return null;
+    }
+
+    @Override
     public void createTransferRequest(Transfer transferRequest) {
         Transfer newTransfer = null;
         String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)"+

@@ -4,11 +4,12 @@ import com.techelevator.tenmo.Service.TransferService;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-
+@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping("/transfer")
 

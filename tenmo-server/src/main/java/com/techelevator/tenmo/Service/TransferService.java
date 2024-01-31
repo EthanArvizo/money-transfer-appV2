@@ -29,6 +29,9 @@ public class TransferService {
         }
     }
     public boolean updateBalances(int accountFrom, int accountTo, BigDecimal amount){
+        if (amount.compareTo(BigDecimal.ZERO) < 0){
+            System.out.println("the send amount must be greater than 0");
+        }
         Account accountFromInfo = accountDao.getAccountByAccountId(accountFrom);
         Account accountToInfo = accountDao.getAccountByAccountId(accountTo);
 
