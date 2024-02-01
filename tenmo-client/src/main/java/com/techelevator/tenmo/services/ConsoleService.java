@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 
 import java.math.BigDecimal;
@@ -45,6 +46,7 @@ public class ConsoleService {
         System.out.println("0: Exit");
         System.out.println();
     }
+
 
     public UserCredentials promptForCredentials() {
         String username = promptForString("Username: ");

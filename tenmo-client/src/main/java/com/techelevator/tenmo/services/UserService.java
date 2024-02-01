@@ -1,30 +1,19 @@
 package com.techelevator.tenmo.services;
 
-import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.User;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
-import java.net.URI;
-
-public class AccountService {
-    private final String API_ACCOUNT_URL = "http://localhost:8080/account";
+public class UserService {
+    private final String API_USER_URL = "http://localhost:8080/user";
     private final RestTemplate restTemplate = new RestTemplate();
-    public Account getAccountByUserId(String token, int userId){
+    private final AccountService accountService = new AccountService();
+    public User getUserByUserId(String token, int userId){
         String endpoint = "/{userId}";
-        System.out.println("Requesting Account for userId: " + userId);
-        return makeAuthenticatedGetRequest(token,endpoint, Account.class,userId);
-    }
-    public BigDecimal getBalanceByUserId(String token, int userId){
-        String endpoint = "/{userId}";
-        Account account = makeAuthenticatedGetRequest(token,endpoint,Account.class,userId);
-        return account.getBalance();
-
+        return makeAuthenticatedGetRequest(token,endpoint,User.class,userId);
     }
     public int getUserIdByAccountId(String token, int accountId){
-        String endpoint = "/byAccount/{accountId}";
-        Account account = makeAuthenticatedGetRequest(token,endpoint, Account.class,accountId);
-        return account.getUserId();
+        return accountService.getAccountByUserId(token,accountId).getUserId();
     }
 
     public <T> T makeAuthenticatedGetRequest(String token, String endpoint, Class<T> responseType, Object... uriVariables) {
@@ -34,7 +23,7 @@ public class AccountService {
         HttpEntity<Void> entity = new HttpEntity<>(httpHeaders);
 
         ResponseEntity<T> response = restTemplate.exchange(
-                API_ACCOUNT_URL + endpoint,
+                API_USER_URL + endpoint,
                 HttpMethod.GET,
                 entity,
                 responseType,
