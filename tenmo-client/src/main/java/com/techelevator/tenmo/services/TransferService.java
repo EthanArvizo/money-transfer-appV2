@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class TransferService {
     private final String API_TRANSFER_URL = "http://localhost:8080/transfer";
@@ -16,6 +17,9 @@ public class TransferService {
     public List<Transfer> getTransferByAccountId(String token, int accountId){
         String endpoint = "/account/{accountId}";
         return makeAuthenticatedGetRequest(token,endpoint,Transfer[].class,accountId);
+    }
+    private String getUserUsernameById(int id,String token) {
+        return userService.getUserByUserId(token,id).getUsername();
     }
     public void displayTransfers(List<Transfer> transfers, int accountId, String token) {
         if (transfers == null || transfers.isEmpty()) {
@@ -37,12 +41,51 @@ public class TransferService {
                 System.out.printf("%-10d%-25s%-10s%n", transfer.getTransferId(), fromTo, amount);
             }
             System.out.println("-------------------------------------------");
-            System.out.print("Please enter transfer ID to view details (0 to cancel): ");
         }
     }
-    private String getUserUsernameById(int id,String token) {
-        return userService.getUserByUserId(token,id).getUsername();
+    public void processTransferDetails(int transferId, List<Transfer> transfers, String token) {
+        Transfer selectedTransfer = null;
+        for (Transfer transfer : transfers) {
+            if (transfer.getTransferId() == transferId) {
+                selectedTransfer = transfer;
+                break;
+            }
+        }
+        if (selectedTransfer != null) {
+            System.out.println("--------------------------------------------");
+            System.out.println("Transfer Details");
+            System.out.println("--------------------------------------------");
+            System.out.println(" Id: " + selectedTransfer.getTransferId());
+            int fromUserId = accountService.getUserIdByAccountId(token, selectedTransfer.getAccountFrom());
+            int toUserId = accountService.getUserIdByAccountId(token, selectedTransfer.getAccountTo());
+            System.out.println(" From: " + getUserUsernameById(fromUserId, token));
+            System.out.println(" To: " + getUserUsernameById(toUserId, token));
+            System.out.println(" Type: " + getTransferType(selectedTransfer.getTransferTypeId()));
+            System.out.println(" Status: " + getTransferStatus(selectedTransfer.getTransferStatusId()));
+            System.out.println(" Amount: $" + selectedTransfer.getAmount());
+            System.out.println("--------------------------------------------");
+        } else {
+            System.out.println("Transfer with ID " + transferId + " not found");
+        }
     }
+    private String getTransferType(int transferTypeId) {
+        if (transferTypeId == 1) {
+            return "Request";
+        } else {
+            return "Send";
+        }
+    }
+
+    private String getTransferStatus(int transferStatusId) {
+        if (transferStatusId == 1) {
+            return "Pending";
+        } else if (transferStatusId == 2) {
+            return "Approved";
+        } else {
+            return "Rejected";
+        }
+    }
+
     public <T> List<T> makeAuthenticatedGetRequest(String token, String endpoint, Class<T[]> responseType, Object... uriVariables) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

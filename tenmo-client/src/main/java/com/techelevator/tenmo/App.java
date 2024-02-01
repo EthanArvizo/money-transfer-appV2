@@ -11,6 +11,7 @@ import com.techelevator.tenmo.services.TransferService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Scanner;
 
 public class App {
 
@@ -104,6 +105,12 @@ public class App {
         int accountId = account.getAccountId();
         List<Transfer> transferList = transferService.getTransferByAccountId(currentUser.getToken(), accountId);
         transferService.displayTransfers(transferList, accountId, currentUser.getToken());
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter transfer ID to view details (0 to cancel): ");
+        int transferId = scanner.nextInt();
+
+        transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
+
     }
 
 
