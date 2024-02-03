@@ -26,7 +26,6 @@ public class AccountService {
         Account account = makeAuthenticatedGetRequest(token,endpoint, Account.class,accountId);
         return account.getUserId();
     }
-
     public <T> T makeAuthenticatedGetRequest(String token, String endpoint, Class<T> responseType, Object... uriVariables) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -40,7 +39,6 @@ public class AccountService {
                 responseType,
                 uriVariables
         );
-
         return response.getBody();
     }
 }

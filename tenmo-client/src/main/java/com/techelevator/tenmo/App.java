@@ -108,13 +108,14 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
         int transferId = scanner.nextInt();
-
         transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
-
     }
 
 
 	private void viewPendingRequests() {
+
+
+
 		// TODO Auto-generated method stub
 		
 	}

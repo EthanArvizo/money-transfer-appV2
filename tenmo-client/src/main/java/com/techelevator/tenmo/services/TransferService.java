@@ -31,7 +31,7 @@ public class TransferService {
             for (Transfer transfer : transfers) {
                 int fromUserId = accountService.getUserIdByAccountId(token, transfer.getAccountFrom());
                 int toUserId = accountService.getUserIdByAccountId(token, transfer.getAccountTo());
-                String fromTo;
+                String fromTo = "";
                 if (fromUserId == accountId) {
                     fromTo = String.format("From: %s  To: %s", getUserUsernameById(fromUserId, token), getUserUsernameById(toUserId, token));
                 } else {
@@ -68,6 +68,21 @@ public class TransferService {
             System.out.println("Transfer with ID " + transferId + " not found");
         }
     }
+    public void processPendingRequests(int transferStatusId, int accountId, List<Transfer> transfers, String token) {
+        if (transfers == null || transfers.isEmpty() || transferStatusId!=1) {
+            System.out.println("You currently have no pending transfers");
+        }else {
+            System.out.println("-------------------------------------------");
+            System.out.println("Current Pending Transfers");
+            System.out.println("ID\t\tTo\t\t\tAmount");
+            for (Transfer transfer : transfers){
+                int fromUserId = accountService.getUserIdByAccountId(token, transfer.getAccountFrom());
+                System.out.printf("%-10d%-25s%-10s%n", transfer.getTransferId(), getUserUsernameById(fromUserId, token));
+            }
+            System.out.println("------------");
+
+        }
+    }
     private String getTransferType(int transferTypeId) {
         if (transferTypeId == 1) {
             return "Request";
@@ -75,7 +90,6 @@ public class TransferService {
             return "Send";
         }
     }
-
     private String getTransferStatus(int transferStatusId) {
         if (transferStatusId == 1) {
             return "Pending";
@@ -85,7 +99,6 @@ public class TransferService {
             return "Rejected";
         }
     }
-
     public <T> List<T> makeAuthenticatedGetRequest(String token, String endpoint, Class<T[]> responseType, Object... uriVariables) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -102,7 +115,5 @@ public class TransferService {
 
         return Arrays.asList(responseEntity.getBody());
     }
-
-
 
 }
