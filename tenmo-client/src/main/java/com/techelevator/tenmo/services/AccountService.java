@@ -27,9 +27,7 @@ public class AccountService {
         Account account = makeAuthenticatedGetRequest(token,endpoint, Account.class,accountId);
         return account.getUserId();
     }
-//    public List<Account> getAccounts(String token, int userId){
-//        return ac
-//    }
+
 
     public <T> T makeAuthenticatedGetRequest(String token, String endpoint, Class<T> responseType, Object... uriVariables) {
         HttpHeaders httpHeaders = new HttpHeaders();

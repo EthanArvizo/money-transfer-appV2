@@ -1,15 +1,10 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.UserCredentials;
-import com.techelevator.tenmo.services.AccountService;
-import com.techelevator.tenmo.services.AuthenticationService;
-import com.techelevator.tenmo.services.ConsoleService;
-import com.techelevator.tenmo.services.TransferService;
+import com.techelevator.tenmo.model.*;
+import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,6 +16,7 @@ public class App {
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
     private final AccountService accountService = new AccountService();
     private final TransferService transferService = new TransferService();
+    private final UserService userService = new UserService();
 
     private AuthenticatedUser currentUser;
 
@@ -122,7 +118,8 @@ public class App {
         Account account = accountService.getAccountByUserId(currentUser.getToken(), userId);
         int accountFrom = account.getAccountId();
         Scanner scanner = new Scanner(System.in);
-
+        List<User> users = userService.getUsers(currentUser.getToken(), currentUser.getUser().getUsername());
+        userService.displayTransfer(users);
         System.out.println("Enter the user ID of who you want to send the transfer to (0 to cancel): ");
         int userToId = scanner.nextInt();
         Account account2 = accountService.getAccountByUserId(currentUser.getToken(),userToId);
