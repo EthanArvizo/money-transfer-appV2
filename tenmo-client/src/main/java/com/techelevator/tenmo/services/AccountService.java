@@ -6,6 +6,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.List;
 
 public class AccountService {
     private final String API_ACCOUNT_URL = "http://localhost:8080/account";
@@ -26,6 +27,10 @@ public class AccountService {
         Account account = makeAuthenticatedGetRequest(token,endpoint, Account.class,accountId);
         return account.getUserId();
     }
+//    public List<Account> getAccounts(String token, int userId){
+//        return ac
+//    }
+
     public <T> T makeAuthenticatedGetRequest(String token, String endpoint, Class<T> responseType, Object... uriVariables) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

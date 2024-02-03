@@ -44,8 +44,7 @@ public class TransferController {
     }
     @PostMapping("/send")
     public String createSendTransfer(@Valid @RequestBody Transfer newTransfer){
-        transferDao.createTransferSend(newTransfer);
-        transferService.updateBalances(newTransfer.getAccountFrom(), newTransfer.getAccountTo(), newTransfer.getAmount());
+        transferService.createSendTransfer(newTransfer);
         return "Transfer created successfully";
     }
 

@@ -109,18 +109,27 @@ public class App {
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
         int transferId = scanner.nextInt();
         transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
+
     }
 
 
 	private void viewPendingRequests() {
-
-
-
-		// TODO Auto-generated method stub
-		
+        viewTransferHistory();
 	}
 
 	private void sendBucks() {
+        int userId = currentUser.getUser().getId();
+        Account account = accountService.getAccountByUserId(currentUser.getToken(), userId);
+        int accountFrom = account.getAccountId();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the user ID of who you want to send the transfer to (0 to cancel): ");
+        int userToId = scanner.nextInt();
+        Account account2 = accountService.getAccountByUserId(currentUser.getToken(),userToId);
+        int accountTo = account2.getAccountId();
+        System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
+        BigDecimal moneyAmount = scanner.nextBigDecimal();
+        transferService.createSendTransfer(currentUser.getToken(),accountFrom,accountTo,moneyAmount);
 		// TODO Auto-generated method stub
 		
 	}

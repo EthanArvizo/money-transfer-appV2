@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+import java.util.List;
+
 @PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping("/user")
@@ -21,4 +24,12 @@ public class UserController {
     public User getUserByUserId(@PathVariable int userId){
         return userDao.getUserById(userId);
     }
+    @GetMapping("/list")
+    public List<User> getUsers(Principal principal){
+        String currentUser = principal.getName();
+        List<User> allUsers = userDao.getUsers();
+        allUsers.removeIf(user -> user.getUsername().equals(currentUser));
+        return allUsers;
+    }
+
 }

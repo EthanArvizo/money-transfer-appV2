@@ -1,10 +1,12 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.dto.TransferRequest;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -20,6 +22,15 @@ public class TransferService {
     }
     private String getUserUsernameById(int id,String token) {
         return userService.getUserByUserId(token,id).getUsername();
+    }
+    public void createSendTransfer(String token,int accountFrom, int accountTo, BigDecimal amount){
+        String endpoint = "/send";
+
+        TransferRequest transferRequest = new TransferRequest();
+        transferRequest.setAccountFrom(accountFrom);
+        transferRequest.setAccountTo(accountTo);
+        transferRequest.setAmount(amount);
+        makeAuthenticatedPostRequest(token,endpoint,transferRequest);
     }
     public void displayTransfers(List<Transfer> transfers, int accountId, String token) {
         if (transfers == null || transfers.isEmpty()) {
@@ -77,7 +88,7 @@ public class TransferService {
             System.out.println("ID\t\tTo\t\t\tAmount");
             for (Transfer transfer : transfers){
                 int fromUserId = accountService.getUserIdByAccountId(token, transfer.getAccountFrom());
-                System.out.printf("%-10d%-25s%-10s%n", transfer.getTransferId(), getUserUsernameById(fromUserId, token));
+                System.out.printf("%-10d%-25s%-10s%n", transfer.getTransferId(), getUserUsernameById(fromUserId, token), transfer.getAmount());
             }
             System.out.println("------------");
 
@@ -115,5 +126,20 @@ public class TransferService {
 
         return Arrays.asList(responseEntity.getBody());
     }
+    public void makeAuthenticatedPostRequest(String token, String endpoint, Object requestObject) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.set("Authorization", "Bearer " + token);
+
+        HttpEntity<Object> entity = new HttpEntity<>(requestObject, httpHeaders);
+
+        restTemplate.exchange(
+                API_TRANSFER_URL + endpoint,
+                HttpMethod.POST,
+                entity,
+                Void.class
+        );
+    }
+
 
 }
