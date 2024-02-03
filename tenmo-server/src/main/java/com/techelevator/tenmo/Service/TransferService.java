@@ -2,6 +2,7 @@ package com.techelevator.tenmo.Service;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.TransferDao;
+import com.techelevator.tenmo.exception.InsufficientBalanceException;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.stereotype.Component;
@@ -17,15 +18,13 @@ public class TransferService {
         this.transferDao = transferDao;
         this.accountDao = accountDao;
     }
-    public String createSendTransfer(Transfer transfer){
+    public void createSendTransfer(Transfer transfer) throws InsufficientBalanceException {
         transfer.setTransferTypeId(2);
         transfer.setTransferStatusId(2);
-        boolean success = updateBalances(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        if (success){
-            transferDao.createTransfer(transfer);
-            return "Transfer sucessful";
-        }else{
-            return "Transfer failed due to insufficient balance";
+        if (updateBalances(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount())) {
+            transferDao.createTransferSend(transfer);
+        } else {
+            throw new InsufficientBalanceException("Insufficient balance");
         }
     }
     public boolean updateBalances(int accountFrom, int accountTo, BigDecimal amount){
@@ -47,5 +46,10 @@ public class TransferService {
             return false;
         }
 
+    }
+    public void createRequestTransfer(Transfer transfer){
+        transfer.setTransferTypeId(1);
+        transfer.setTransferStatusId(1);
+        transferDao.createTransferRequest(transfer);
     }
 }

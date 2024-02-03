@@ -91,7 +91,6 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
         System.out.println("Current Balance: $" + accountService.getBalanceByUserId(currentUser.getToken(), currentUser.getUser().getId()));
 	}
 
@@ -99,8 +98,10 @@ public class App {
         int userId = currentUser.getUser().getId();
         Account account = accountService.getAccountByUserId(currentUser.getToken(), userId);
         int accountId = account.getAccountId();
+
         List<Transfer> transferList = transferService.getTransferByAccountId(currentUser.getToken(), accountId);
         transferService.displayTransfers(transferList, accountId, currentUser.getToken());
+
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
         int transferId = scanner.nextInt();
@@ -110,28 +111,32 @@ public class App {
 
 
 	private void viewPendingRequests() {
-        viewTransferHistory();
+
 	}
 
 	private void sendBucks() {
+        Scanner scanner = new Scanner(System.in);
+
         int userId = currentUser.getUser().getId();
         Account account = accountService.getAccountByUserId(currentUser.getToken(), userId);
+
         int accountFrom = account.getAccountId();
-        Scanner scanner = new Scanner(System.in);
         List<User> users = userService.getUsers(currentUser.getToken(), currentUser.getUser().getUsername());
-        userService.displayTransfer(users);
+        userService.displayUsers(users);
+
         System.out.println("Enter the user ID of who you want to send the transfer to (0 to cancel): ");
         int userToId = scanner.nextInt();
         Account account2 = accountService.getAccountByUserId(currentUser.getToken(),userToId);
         int accountTo = account2.getAccountId();
+
         System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
         BigDecimal moneyAmount = scanner.nextBigDecimal();
         transferService.createSendTransfer(currentUser.getToken(),accountFrom,accountTo,moneyAmount);
-		// TODO Auto-generated method stub
-		
 	}
 
 	private void requestBucks() {
+        List<User> users = userService.getUsers(currentUser.getToken(), currentUser.getUser().getUsername());
+        userService.displayUsers(users);
 		// TODO Auto-generated method stub
 		
 	}

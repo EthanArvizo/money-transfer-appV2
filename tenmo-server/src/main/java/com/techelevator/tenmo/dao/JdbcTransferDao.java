@@ -19,16 +19,16 @@ public class JdbcTransferDao implements TransferDao{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
-    public void createTransfer(Transfer transfer) {
-        Transfer newTransfer = null;
-        String sql = "INSERT INTO transfer (transfer_type_id,transfer_status_id, account_from, account_to, amount)VALUES (?, ?, ?, ?, ?)";
-        try {
-            jdbcTemplate.update(sql,transfer.getTransferTypeId(), transfer.getTransferStatusId(),transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
-        }catch (CannotGetJdbcConnectionException e){
-            throw new DaoException("Unable to connect to server or database", e);
-        }
-    }
+//    @Override
+//    public void createTransfer(Transfer transfer) {
+//        Transfer newTransfer = null;
+//        String sql = "INSERT INTO transfer (transfer_type_id,transfer_status_id, account_from, account_to, amount)VALUES (?, ?, ?, ?, ?)";
+//        try {
+//            jdbcTemplate.update(sql,transfer.getTransferTypeId(), transfer.getTransferStatusId(),transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
+//        }catch (CannotGetJdbcConnectionException e){
+//            throw new DaoException("Unable to connect to server or database", e);
+//        }
+//    }
 
     @Override
     public Transfer getTransferById(int transferId) {
@@ -61,10 +61,10 @@ public class JdbcTransferDao implements TransferDao{
         return transfers;
     }
 
-    @Override
-    public List<Transfer> getTransfersByUserId(int userId) {
-        return null;
-    }
+//    @Override
+//    public List<Transfer> getTransfersByUserId(int userId) {
+//        return null;
+//    }
 
     @Override
     public void createTransferRequest(Transfer transferRequest) {
@@ -73,11 +73,8 @@ public class JdbcTransferDao implements TransferDao{
                 "VALUES (?, ?, ?, ?, ?)";
         int transferTypeId = 1;
         int transferStatusId = 1;
-        try {
            jdbcTemplate.update(sql,transferTypeId, transferStatusId, transferRequest.getAccountFrom(), transferRequest.getAccountTo(), transferRequest.getAmount());
-        }catch (CannotGetJdbcConnectionException e){
-            throw new DaoException("Unable to connect to server or database", e);
-        }
+
     }
 
     @Override
@@ -87,11 +84,7 @@ public class JdbcTransferDao implements TransferDao{
                 "VALUES (?, ?, ?, ?, ?)";
         int transferTypeId = 2;
         int transferStatusId = 2;
-        try {
             jdbcTemplate.update(sql,transferTypeId, transferStatusId, transferSend.getAccountFrom(), transferSend.getAccountTo(), transferSend.getAmount());
-        }catch (CannotGetJdbcConnectionException e){
-            throw new DaoException("Unable to connect to server or database", e);
-        }
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rs){

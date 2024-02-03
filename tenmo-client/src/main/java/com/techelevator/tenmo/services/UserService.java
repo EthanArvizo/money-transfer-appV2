@@ -26,7 +26,7 @@ public class UserService {
         return makeAuthenticatedGetRequestForList(token, endpoint, User[].class,username);
 
     }
-    public void displayTransfer(List<User> users) {
+    public void displayUsers(List<User> users) {
         if (users == null || users.isEmpty()) {
             System.out.println("No Users found");
         }else{

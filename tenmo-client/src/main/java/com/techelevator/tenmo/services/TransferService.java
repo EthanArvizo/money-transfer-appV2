@@ -3,6 +3,7 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.dto.TransferRequest;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
+import com.techelevator.util.BasicLoggerException;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,15 +24,37 @@ public class TransferService {
     private String getUserUsernameById(int id,String token) {
         return userService.getUserByUserId(token,id).getUsername();
     }
-    public void createSendTransfer(String token,int accountFrom, int accountTo, BigDecimal amount){
+    public void createSendTransfer(String token, int accountFrom, int accountTo, BigDecimal amount) {
         String endpoint = "/send";
 
         TransferRequest transferRequest = new TransferRequest();
         transferRequest.setAccountFrom(accountFrom);
         transferRequest.setAccountTo(accountTo);
         transferRequest.setAmount(amount);
-        makeAuthenticatedPostRequest(token,endpoint,transferRequest);
+        try {
+            makeAuthenticatedPostRequest(token, endpoint, transferRequest);
+            System.out.println("Transfer successful!");
+        } catch (Exception e) {
+            if (e.getMessage().contains("Insufficient balance")) {
+                System.out.println("Transfer failed: Insufficient balance in the sender's account.");
+            } else {
+                System.out.println("An error occurred: " + e.getMessage());
+            }
+        }
     }
+    public void createRequestTransfer(String token, int accountFrom, int accountTo, BigDecimal amount){
+        String endpoint = "/request";
+
+        TransferRequest transferRequest = new TransferRequest();
+        transferRequest.setAccountFrom(accountFrom);
+        transferRequest.setAccountTo(accountTo);
+        transferRequest.setAmount(amount);
+
+        makeAuthenticatedPostRequest(token,endpoint,transferRequest);
+        System.out.println("Request successfully created");
+    }
+
+
     public void displayTransfers(List<Transfer> transfers, int accountId, String token) {
         if (transfers == null || transfers.isEmpty()) {
             System.out.println("No past transfer history");

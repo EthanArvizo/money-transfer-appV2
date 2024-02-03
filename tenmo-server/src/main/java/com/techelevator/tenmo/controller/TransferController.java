@@ -23,12 +23,12 @@ public class TransferController {
         this.transferDao = transferDao;
         this.transferService = transferService;
     }
-    @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public String createTransfer(@Valid @RequestBody Transfer newTransfer){
-        transferDao.createTransfer(newTransfer);
-        return "Transfer created successfully";
-    }
+//    @PostMapping("/create")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public String createTransfer(@Valid @RequestBody Transfer newTransfer){
+//        transferDao.createTransfer(newTransfer);
+//        return "Transfer created successfully";
+//    }
     @GetMapping("/{transferId}")
     public Transfer getTransferByTransferId(@PathVariable int transferId){
         return transferDao.getTransferById(transferId);
