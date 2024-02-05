@@ -114,7 +114,11 @@ public class App {
         int accountId = account.getAccountId();
 
         List<Transfer> transferList = transferService.getTransferByAccountId(currentUser.getToken(), accountId);
-        transferService.displayTransfers(transferList, accountId, currentUser.getToken());
+        boolean hasTransfers = transferService.displayTransfers(transferList, accountId, currentUser.getToken());
+        if (!hasTransfers) {
+            return;
+        }
+
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
@@ -130,19 +134,19 @@ public class App {
         int accountId = account.getAccountId();
 
         List<Transfer> transferList = transferService.getPendingTransfers(currentUser.getToken(), accountId);
-        transferService.displayPendingRequests(transferList, currentUser.getToken());
+        boolean hasPendingTransfers = transferService.displayPendingRequests(transferList, currentUser.getToken());
+
+        if (!hasPendingTransfers) {
+            return;
+        }
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
         int transferId = scanner.nextInt();
+
         transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
         consoleService.printPendingRequestOptions();
         handleApprovalOrRejection(transferId);
-
-
-
-
-
 	}
 
 	private void sendBucks() {

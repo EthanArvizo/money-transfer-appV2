@@ -83,9 +83,10 @@ public class TransferService {
     }
 
 
-    public void displayTransfers(List<Transfer> transfers, int accountId, String token) {
+    public boolean displayTransfers(List<Transfer> transfers, int accountId, String token) {
         if (transfers == null || transfers.isEmpty()) {
             System.out.println("No past transfer history");
+            return false;
         } else {
             System.out.println("Transfers");
             System.out.println("ID\t\tFrom/To\t\t\tAmount");
@@ -103,6 +104,7 @@ public class TransferService {
                 System.out.printf("%-10d%-25s%-10s%n", transfer.getTransferId(), fromTo, amount);
             }
             System.out.println("-------------------------------------------");
+            return true;
         }
     }
     public void processTransferDetails(int transferId, List<Transfer> transfers, String token) {
@@ -130,9 +132,10 @@ public class TransferService {
             System.out.println("Transfer with ID " + transferId + " not found");
         }
     }
-    public void displayPendingRequests(List<Transfer> transfers, String token) {
+    public boolean displayPendingRequests(List<Transfer> transfers, String token) {
         if (transfers == null || transfers.isEmpty()) {
             System.out.println("You currently have no pending transfers");
+            return false;
         } else {
             System.out.println("-------------------------------------------");
             System.out.println("Current Pending Transfers");
@@ -143,6 +146,7 @@ public class TransferService {
                 System.out.printf("%-8d%-20s%-15s%n", transfer.getTransferId(), getUserUsernameById(fromUserId, token), formattedAmount);
             }
             System.out.println("-------------------------------------------");
+            return true;
         }
     }
     private String getTransferType(int transferTypeId) {
