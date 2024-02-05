@@ -1,252 +1,144 @@
-# Module 2 Capstone - TEnmo
+# Money Transfer App
 
-Congratulations—you've landed a job with TEnmo, whose product is an online payment service for transferring "TE bucks" between friends. However, they don't have a product yet. You've been tasked with writing a RESTful API server and command-line application.
+This app is an online payment service for transferring bucks between friends. It consists of the backend, which is a RESTful API server, and a frontend which is a java-based command-line application.
 
-## Use cases
+## Features
 
-### Required use cases
+1. __Registration:__ A user will be able to register themselves by providing a username and password. A new registered user starts with an initial balance of 1,000 Bucks.
+2. __Authentication:__ After successful registration, a user will be able to log in using their registered username and password. Logging in returns an Authentication Token. This token needs to be included with all subsequent API calls.
+3. __Show Balance:__ After logging in, a user is able to see their Account Balance.
+4. __Send Money:__  An authenticated user of the system is able to send a specific amount of Bucks to a registered user.
+- The authenticated user will be able to choose from a list of users to send TE Bucks to
+- The authenticated user will not be allowed to send money to themselves.
+- The receiver’s account balance is increased by the amount of the transfer.
+- The sender’s account balance is decreased by the amount of the transfer.
+- The authenticated user can’t send more Bucks than they have in their account.
+- The authenticated user can’t send a zero or negative amount.
+- A Sending Transfer, given that it’s not zero or negative amount, the amount is not more that the current balance, and the sender and receiver are not the same, is automatically approved
+5. __Display Transfers History:__ An authenticated user of the system will be able to see transfers they have sent or received.
+6. __Display Details of a Specific Transfer:__ An authenticated user of the system will be able to retrieve the details of any transfer based upon the transfer ID.
+7. __Request Money:__ An authenticated user of the system will be able to request a transfer of a specific amount of Bucks from another registered user.
+- The authenticated user will be able to choose from a list of users to request Bucks from.
+- The authenticated user will not be allowed to request money from themselves.
+- The authenticated user can’t request a zero or negative amount.
+- A Request Transfer has an initial status of Pending.
+- Add account balance changes until the request is approved.
+- The transfer request should appear in both users’ list of transfers.
+8. __Display Pending Transfers:__ An authenticated user of the system will be able to see their Pending transfers.
+9. __Approve/Reject a Transfer Request:__ An authenticated user of the system will be able to either approve or reject a Request Transfer.
+- An authenticated user of the system will NOT be able to “approve” a given Request Transfer for more Bucks than the current balance.
+- The Request Transfer status is Approved if the user approves, or Rejected if the user rejects the request.
+- If the transfer is approved, the requester’s account balance is increased by the amount of the request and the requestee’s account balance is decreased by the amount of the request.
+- If the transfer is rejected, no account balance changes but the transfer will still appear in the transfer history
 
-You should attempt to complete all of the following required use cases.
+### Prerequisite:
+PostgreSQL
+Database username should be “postgres” and password should be “postgres1”
+A database named “tenmo” 
 
-1. **[COMPLETE]** As a user of the system, I need to be able to register myself with a username and password.
-   1. A new registered user starts with an initial balance of 1,000 TE Bucks.
-   2. The ability to register has been provided in your starter code.
-2. **[COMPLETE]** As a user of the system, I need to be able to log in using my registered username and password.
-   1. Logging in returns an Authentication Token. I need to include this token with all my subsequent interactions with the system outside of registering and logging in.
-   2. The ability to log in has been provided in your starter code.
-3. As an authenticated user of the system, I need to be able to see my Account Balance.
-4. As an authenticated user of the system, I need to be able to *send* a transfer of a specific amount of TE Bucks to a registered user.
-   1. I should be able to choose from a list of users to send TE Bucks to.
-   2. I must not be allowed to send money to myself.
-   3. A transfer includes the User IDs of the from and to users and the amount of TE Bucks.
-   4. The receiver's account balance is increased by the amount of the transfer.
-   5. The sender's account balance is decreased by the amount of the transfer.
-   6. I can't send more TE Bucks than I have in my account.
-   7. I can't send a zero or negative amount.
-   8. A Sending Transfer has an initial status of *Approved*.
-5. As an authenticated user of the system, I need to be able to see transfers I have sent or received.
-6. As an authenticated user of the system, I need to be able to retrieve the details of any transfer based upon the transfer ID.
+To run this project locally, you will need to create a Postgres database and run the following sql script to create the necessary tables.
 
-### Optional use cases
+Refer to this link if you don’t know how to [Create Database in PostgreSQL using PSQL and PgAdmin](https://www.tutorialsteacher.com/postgresql/create-database#:~:text=Create%20Database%20using%20pgAdmin&text=Open%20pgAdmin%20and%20right%2Dclick,Database%E2%80%A6%20%2C%20as%20shown%20below.&text=This%20will%20open%20Create%20%E2%80%93%20Database,be%20the%20owner%20by%20default)
 
-If you complete all of the required use cases and are looking for additional challenge, complete as many of the following optional use cases as you can.
-
-7. As an authenticated user of the system, I need to be able to *request* a transfer of a specific amount of TE Bucks from another registered user.
-   1. I should be able to choose from a list of users to request TE Bucks from.
-   2. I must not be allowed to request money from myself.
-   3. I can't request a zero or negative amount.
-   4. A transfer includes the User IDs of the from and to users and the amount of TE Bucks.
-   5. A Request Transfer has an initial status of *Pending*.
-   6. No account balance changes until the request is approved.
-   7. The transfer request should appear in both users' list of transfers (use case #5).
-8. As an authenticated user of the system, I need to be able to see my *Pending* transfers.
-9. As an authenticated user of the system, I need to be able to either approve or reject a Request Transfer.
-   1. I can't "approve" a given Request Transfer for more TE Bucks than I have in my account.
-   2. The Request Transfer status is *Approved* if I approve, or *Rejected* if I reject the request.
-   3. If the transfer is approved, the requester's account balance is increased by the amount of the request.
-   4. If the transfer is approved, the requestee's account balance is decreased by the amount of the request.
-   5. If the transfer is rejected, no account balance changes.
-
-## Sample screens
-
-### Use case 3: Current balance
-```
-Your current account balance is: $9999.99
-```
-
-### Use case 4: Send TE Bucks
-```
--------------------------------------------
-Users
-ID          Name
--------------------------------------------
-313         Bernice
-54          Larry
----------
-
-Enter ID of user you are sending to (0 to cancel):
-Enter amount:
-```
-
-### Use case 5: View transfers
-```
--------------------------------------------
-Transfers
-ID          From/To                 Amount
--------------------------------------------
-23          From: Bernice          $ 903.14
-79          To:    Larry           $  12.55
----------
-Please enter transfer ID to view details (0 to cancel): "
-```
-
-### Use case 6: Transfer details
-```
---------------------------------------------
-Transfer Details
---------------------------------------------
- Id: 23
- From: Bernice
- To: Me Myselfandi
- Type: Send
- Status: Approved
- Amount: $903.14
-```
-
-### Use case 7: Requesting TE Bucks
-```
--------------------------------------------
-Users
-ID          Name
--------------------------------------------
-313         Bernice
-54          Larry
----------
-
-Enter ID of user you are requesting from (0 to cancel):
-Enter amount:
-```
-
-### Use case 8: Pending requests
-```
--------------------------------------------
-Pending Transfers
-ID          To                     Amount
--------------------------------------------
-88          Bernice                $ 142.56
-147         Larry                  $  10.17
----------
-Please enter transfer ID to approve/reject (0 to cancel): "
-```
-
-### Use case 9: Approve or reject pending transfer
-```
-1: Approve
-2: Reject
-0: Don't approve or reject
----------
-Please choose an option:
-```
-
-## Database schema
-
-![Database schema](./img/Tenmo_erd.png)
-
-### `tenmo_user` table
-
-Stores the login information for users of the system.
-
-| Field           | Description                                                                    |
-|-----------------|--------------------------------------------------------------------------------|
-| `user_id`       | Unique identifier of the user                                                  |
-| `username`      | String that identifies the name of the user; used as part of the login process |
-| `password_hash` | Hashed version of the user's password                                          |
-| `role`          | Name of the user's role                                                        |
-
-### `account` table
-
-Stores the accounts of users in the system.
-
-| Field           | Description                                                        |
-| --------------- | ------------------------------------------------------------------ |
-| `account_id`    | Unique identifier of the account                                   |
-| `user_id`       | Foreign key to the `users` table; identifies user who owns account |
-| `balance`       | The amount of TE bucks currently in the account                    |
-
-### `transfer_type` table
-
-Stores the types of transfers that are possible.
-
-| Field                | Description                             |
-| -------------------- | --------------------------------------- |
-| `transfer_type_id`   | Unique identifier of the transfer type  |
-| `transfer_type_desc` | String description of the transfer type |
-
-There are two types of transfers:
-
-| `transfer_type_id` | `transfer_type_desc` | Purpose                                                                |
-| ------------------ | -------------------- | ---------------------------------------------------------------------- |
-| 1                  | Request              | Identifies transfer where a user requests money from another user      |
-| 2                  | Send                 | Identifies transfer where a user sends money to another user           |
-
-### `transfer_status` table
-
-Stores the statuses of transfers that are possible.
-
-| Field                  | Description                               |
-| ---------------------- | ----------------------------------------- |
-| `transfer_status_id`   | Unique identifier of the transfer status  |
-| `transfer_status_desc` | String description of the transfer status |
-
-There are three statuses of transfers:
-
-| `transfer_status_id` | `transfer_status_desc` |Purpose                                                                                 |
-| -------------------- | -------------------- | ---------------------------------------------------------------------------------------  |
-| 1                    | Pending                | Identifies transfer that hasn't occurred yet and requires approval from the other user |
-| 2                    | Approved               | Identifies transfer that has been approved and occurred                                |
-| 3                    | Rejected               | Identifies transfer that wasn't approved                                               |
-
-### `transfer` table
-
-Stores the transfers of TE bucks.
-
-| Field                | Description                                                                                     |
-| -------------------- | ----------------------------------------------------------------------------------------------- |
-| `transfer_id`        | Unique identifier of the transfer                                                               |
-| `transfer_type_id`   | Foreign key to the `transfer_types` table; identifies type of transfer                          |
-| `transfer_status_id` | Foreign key to the `transfer_statuses` table; identifies status of transfer                     |
-| `account_from`       | Foreign key to the `accounts` table; identifies the account that the funds are being taken from |
-| `account_to`         | Foreign key to the `accounts` table; identifies the account that the funds are going to         |
-| `amount`             | Amount of the transfer                                                                          |
-
-> Note: there are two check constraints in the DDL that creates the `transfer` table. Be sure to take a look at `tenmo.sql` to understand these constraints.
-
-## How to set up the database
-
-Create a new Postgres database called `tenmo`. Run the `database/tenmo.sql` script in pgAdmin to set up the database.
-
-### Datasource
-
-A Datasource has been configured for you in `/src/resources/application.properties`. 
+### Database schema (Run this in your PgAdmin or PSQL)
 
 ```
-# datasource connection properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/tenmo
-spring.datasource.name=tenmo
-spring.datasource.username=postgres
-spring.datasource.password=postgres1
+BEGIN TRANSACTION;
+
+DROP TABLE IF EXISTS transfer, account, tenmo_user, transfer_type, transfer_status;
+DROP SEQUENCE IF EXISTS seq_user_id, seq_account_id, seq_transfer_id;
+
+
+CREATE TABLE transfer_type (
+    transfer_type_id serial NOT NULL,
+    transfer_type_desc varchar(10) NOT NULL,
+    CONSTRAINT PK_transfer_type PRIMARY KEY (transfer_type_id)
+);
+
+CREATE TABLE transfer_status (
+    transfer_status_id serial NOT NULL,
+    transfer_status_desc varchar(10) NOT NULL,
+    CONSTRAINT PK_transfer_status PRIMARY KEY (transfer_status_id)
+);
+
+CREATE SEQUENCE seq_user_id
+  INCREMENT BY 1
+  START WITH 1001
+  NO MAXVALUE;
+
+CREATE TABLE tenmo_user (
+    user_id int NOT NULL DEFAULT nextval('seq_user_id'),
+    username varchar(50) UNIQUE NOT NULL,
+    password_hash varchar(200) NOT NULL,
+    role varchar(20),
+    CONSTRAINT PK_tenmo_user PRIMARY KEY (user_id),
+    CONSTRAINT UQ_username UNIQUE (username)
+);
+
+CREATE SEQUENCE seq_account_id
+  INCREMENT BY 1
+  START WITH 2001
+  NO MAXVALUE;
+
+CREATE TABLE account (
+    account_id int NOT NULL DEFAULT nextval('seq_account_id'),
+    user_id int NOT NULL,
+    balance decimal(13, 2) NOT NULL,
+    CONSTRAINT PK_account PRIMARY KEY (account_id),
+    CONSTRAINT FK_account_tenmo_user FOREIGN KEY (user_id) REFERENCES tenmo_user (user_id)
+);
+
+CREATE SEQUENCE seq_transfer_id
+  INCREMENT BY 1
+  START WITH 3001
+  NO MAXVALUE;
+
+CREATE TABLE transfer (
+    transfer_id int NOT NULL DEFAULT nextval('seq_transfer_id'),
+    transfer_type_id int NOT NULL,
+    transfer_status_id int NOT NULL,
+    account_from int NOT NULL,
+    account_to int NOT NULL,
+    amount decimal(13, 2) NOT NULL,
+    CONSTRAINT PK_transfer PRIMARY KEY (transfer_id),
+    CONSTRAINT FK_transfer_account_from FOREIGN KEY (account_from) REFERENCES account (account_id),
+    CONSTRAINT FK_transfer_account_to FOREIGN KEY (account_to) REFERENCES account (account_id),
+    CONSTRAINT FK_transfer_transfer_status FOREIGN KEY (transfer_status_id) REFERENCES transfer_status (transfer_status_id),
+    CONSTRAINT FK_transfer_transfer_type FOREIGN KEY (transfer_type_id) REFERENCES transfer_type (transfer_type_id),
+    CONSTRAINT CK_transfer_not_same_account CHECK (account_from <> account_to),
+    CONSTRAINT CK_transfer_amount_gt_0 CHECK (amount > 0)
+);
+
+INSERT INTO transfer_status (transfer_status_desc) VALUES ('Pending');
+INSERT INTO transfer_status (transfer_status_desc) VALUES ('Approved');
+INSERT INTO transfer_status (transfer_status_desc) VALUES ('Rejected');
+
+INSERT INTO transfer_type (transfer_type_desc) VALUES ('Request');
+INSERT INTO transfer_type (transfer_type_desc) VALUES ('Send');
+
+COMMIT;
 ```
 
-### JdbcTemplate
+* Once the cloning process is complete, open your PgAdmin (or any other database admin you are using), create a database and name it ‘tenmo’.
+* From your PgAdmin, open data.sql file (it's located in the project directory’s data folder) and execute it.
 
-If you look in `/src/main/java/com/techelevator/dao`, you'll see `JdbcUserDao`. This is an example of how to get an instance of `JdbcTemplate` in your DAOs. If you declare a field of type `JdbcTemplate` and add it as an argument to the constructor, Spring automatically injects an instance for you:
+## How to run the project:
 
-```java
-@Service
-public class JdbcUserDao implements UserDao {
+* Once your database setup is complete, open the project in your favorite IDE, navigate to tenmo-server directory, `com.techelevator.tenmo` package and run TenmoApplication.java
+* The server-side of the app should now be running on your local machine.
+* Then, open go to tenmo-client directory, `com.techelevator` package and run App.java
+* The client-side of the app should be running in your local machine now.
 
-    private JdbcTemplate jdbcTemplate;
+# Running the App using command line
 
-    public JdbcUserDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-}
-```
+Open your terminal/Gitbash and navigate to the project folder
+Navigate to the tenmo-server directory and type the following command to run the server side: 
+mvn clean package 
+Maven will build the project into a jar file inside the target directory. Navigate to target and run the jar file using the following command: 
+java -jar m02-capstone-server-1.0.jar 
+Navigate to tenmo-server and type the following command to run the client side: 
+mvn clean package 
+Now, change directory to the target folder and run the following command: 
+Important Note: if you see an error like Error: Unable to access jarfile m02-capstone-server-0.0.1.jar, your jar file name might be different and hence you would want to give the appropriate name to the following command after java -jar. You can find out the name of your jar file by running the ls command in your target directory. 
+java -jar m02-capstone-client-0.0.1-SNAPSHOT.jar 
 
-## Testing
-
-
-### DAO integration tests
-
-`com.techelevator.dao.BaseDaoTests` has been provided for you to use as a base class for any DAO integration test. It initializes a Datasource for testing and manages rollback of database changes between tests.
-
-`com.techelevator.dao.JdbUserDaoTests` has been provided for you as an example for writing your own DAO integration tests.
-
-Remember that when testing, you're using a copy of the real database. The schema and data for the test database are defined in `/src/test/resources/test-data.sql`. The schema in this file matches the schema defined in `database/tenmo.sql`.
-
-
-## Authentication
-
-The user registration and authentication functionality for the system has already been implemented. If you review the login code, you'll notice that after successful authentication, an instance of `AuthenticatedUser` is stored in the `currentUser` member variable of `App`. The user's authorization token—meaning JWT—can be accessed from `App` as `currentUser.getToken()`.
-
-When the use cases refer to an "authenticated user", this means a request that includes the token as a header. You can also reference other information about the current user by using the `User` object retrieved from `currentUser.getUser()`.
