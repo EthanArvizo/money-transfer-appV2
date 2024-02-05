@@ -65,6 +65,10 @@ public class App {
             consoleService.printErrorMessage();
         }
     }
+    private void pendingRequestSelection(){
+    }
+    private void handlePendingRequests(){
+    }
 
     private void mainMenu() {
         int menuSelection = -1;
@@ -135,9 +139,23 @@ public class App {
 	}
 
 	private void requestBucks() {
+        Scanner scanner = new Scanner(System.in);
+
+        int userId = currentUser.getUser().getId();
+        Account account = accountService.getAccountByUserId(currentUser.getToken(), userId);
+
+        int accountFrom = account.getAccountId();
         List<User> users = userService.getUsers(currentUser.getToken(), currentUser.getUser().getUsername());
         userService.displayUsers(users);
-		// TODO Auto-generated method stub
+
+        System.out.println("Enter the user ID of who you want to request the transfer to (0 to cancel): ");
+        int userToId = scanner.nextInt();
+        Account account2 = accountService.getAccountByUserId(currentUser.getToken(),userToId);
+        int accountTo = account2.getAccountId();
+
+        System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
+        BigDecimal moneyAmount = scanner.nextBigDecimal();
+        transferService.createRequestTransfer(currentUser.getToken(),accountFrom,accountTo,moneyAmount);
 		
 	}
 

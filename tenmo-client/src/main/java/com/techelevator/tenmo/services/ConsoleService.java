@@ -46,6 +46,13 @@ public class ConsoleService {
         System.out.println("0: Exit");
         System.out.println();
     }
+    public void printPendingRequests(){
+        System.out.println();
+        System.out.println("1: Approve");
+        System.out.println("2: Reject");
+        System.out.println("0: Don't approve or reject");
+        System.out.println();
+    }
 
 
     public UserCredentials promptForCredentials() {
