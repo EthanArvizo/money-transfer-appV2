@@ -45,7 +45,15 @@ public class TransferService {
         }else{
             return false;
         }
+    }
+    public void denyTransfer(int transferId) {
+        transferDao.denyTransfer(transferId);
+    }
 
+    public void acceptTransfer(int transferId) {
+        Transfer transfer = transferDao.getTransferById(transferId);
+        transferDao.acceptTransfer(transferId);
+        updateBalances(transfer.getAccountTo(),transfer.getAccountFrom(),transfer.getAmount());
     }
     public void createRequestTransfer(Transfer transfer){
         transfer.setTransferTypeId(1);

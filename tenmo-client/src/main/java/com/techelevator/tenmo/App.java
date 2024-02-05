@@ -4,7 +4,6 @@ import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.util.List;
 import java.util.Scanner;
 
@@ -65,9 +64,20 @@ public class App {
             consoleService.printErrorMessage();
         }
     }
-    private void pendingRequestSelection(){
-    }
-    private void handlePendingRequests(){
+    private void handleApprovalOrRejection(int transferId) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Please choose an option: ");
+
+        int userChoice = scanner.nextInt();
+
+        if (userChoice == 1) {
+           transferService.acceptTransfer(currentUser.getToken(),transferId);
+        } else if (userChoice == 2) {
+            transferService.denyTransfer(currentUser.getToken(),transferId);
+        } else {
+            System.out.println("Operation canceled.");
+        }
+
     }
 
     private void mainMenu() {
@@ -115,6 +125,23 @@ public class App {
 
 
 	private void viewPendingRequests() {
+        int userId = currentUser.getUser().getId();
+        Account account = accountService.getAccountByUserId(currentUser.getToken(), userId);
+        int accountId = account.getAccountId();
+
+        List<Transfer> transferList = transferService.getPendingTransfers(currentUser.getToken(), accountId);
+        transferService.displayPendingRequests(transferList, currentUser.getToken());
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter transfer ID to view details (0 to cancel): ");
+        int transferId = scanner.nextInt();
+        transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
+        consoleService.printPendingRequestOptions();
+        handleApprovalOrRejection(transferId);
+
+
+
+
 
 	}
 

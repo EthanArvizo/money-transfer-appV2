@@ -42,10 +42,24 @@ public class TransferController {
         transferDao.createTransferRequest(newTransfer);
         return "Transfer created successfully";
     }
-    @PostMapping("/send")
+    @PostMapping("/send/{transferId}")
     public String createSendTransfer(@Valid @RequestBody Transfer newTransfer){
         transferService.createSendTransfer(newTransfer);
         return "Transfer created successfully";
+    }
+    @PostMapping("/deny/{transferId}")
+    public void denyRequest(@PathVariable int transferId){
+        transferService.denyTransfer(transferId);
+
+    }
+    @PostMapping("/accept/{transferId}")
+    public void acceptRequest(@PathVariable int transferId){
+        transferService.acceptTransfer(transferId);
+    }
+
+    @GetMapping("/account/{accountId}/pending")
+    public List<Transfer> getPendingTransfers(@PathVariable int accountId){
+        return transferDao.getPendingTransfersByAccountId(accountId);
     }
 
 }

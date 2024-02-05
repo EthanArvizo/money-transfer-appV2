@@ -61,10 +61,6 @@ public class JdbcTransferDao implements TransferDao{
         return transfers;
     }
 
-//    @Override
-//    public List<Transfer> getTransfersByUserId(int userId) {
-//        return null;
-//    }
 
     @Override
     public void createTransferRequest(Transfer transferRequest) {
@@ -85,6 +81,34 @@ public class JdbcTransferDao implements TransferDao{
         int transferTypeId = 2;
         int transferStatusId = 2;
             jdbcTemplate.update(sql,transferTypeId, transferStatusId, transferSend.getAccountFrom(), transferSend.getAccountTo(), transferSend.getAmount());
+    }
+
+    @Override
+    public List<Transfer> getPendingTransfersByAccountId(int accountId) {
+        List<Transfer> transfers = new ArrayList<>();
+        String sql = "SELECT * FROM transfer WHERE account_to = ? AND transfer_status_id = 1";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql,accountId);
+            while (results.next()){
+                Transfer transfer = mapRowToTransfer(results);
+                transfers.add(transfer);
+            }
+        }catch (CannotGetJdbcConnectionException e){
+            throw new DaoException("Unable to connect to server or database", e);
+        }
+        return transfers;
+    }
+
+    @Override
+    public void denyTransfer(int transferId) {
+        String sql = "UPDATE transfer SET transfer_status_id = 3 WHERE transfer_id = ?";
+        jdbcTemplate.update(sql, transferId);
+    }
+
+    @Override
+    public void acceptTransfer(int transferId) {
+        String sql = "UPDATE transfer SET transfer_status_id = 2 WHERE transfer_id = ?";
+        jdbcTemplate.update(sql, transferId);
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rs){
