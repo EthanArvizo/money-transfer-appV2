@@ -17,18 +17,22 @@ public class TransferService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final UserService userService = new UserService();
     private final AccountService accountService = new AccountService();
-    public List<Transfer> getTransferByAccountId(String token, int accountId){
+
+    public List<Transfer> getTransferByAccountId(String token, int accountId) {
         String endpoint = "/account/{accountId}";
-        return makeAuthenticatedGetRequest(token,endpoint,Transfer[].class,accountId);
+        return makeAuthenticatedGetRequest(token, endpoint, Transfer[].class, accountId);
     }
-    private String getUserUsernameById(int id,String token) {
-        return userService.getUserByUserId(token,id).getUsername();
+
+    private String getUserUsernameById(int id, String token) {
+        return userService.getUserByUserId(token, id).getUsername();
     }
-    public List<Transfer> getPendingTransfers(String token, int accountId){
+
+    public List<Transfer> getPendingTransfers(String token, int accountId) {
         String endpoint = "/account/{accountId}/pending";
-        return makeAuthenticatedGetRequest(token,endpoint,Transfer[].class,accountId);
+        return makeAuthenticatedGetRequest(token, endpoint, Transfer[].class, accountId);
     }
-    public void denyTransfer(String token, int transferId){
+
+    public void denyTransfer(String token, int transferId) {
         String endpoint = "/deny/{transferId}";
 
         HttpHeaders httpHeaders = createAuthenticatedHeaders(token);
@@ -40,7 +44,8 @@ public class TransferService {
             System.out.println("An error occurred while denying the transfer: " + e.getMessage());
         }
     }
-    public void acceptTransfer(String token, int transferId){
+
+    public void acceptTransfer(String token, int transferId) {
         String endpoint = "/accept/{transferId}";
         HttpHeaders httpHeaders = createAuthenticatedHeaders(token);
         HttpEntity<Void> entity = new HttpEntity<>(httpHeaders);
@@ -70,7 +75,8 @@ public class TransferService {
             }
         }
     }
-    public void createRequestTransfer(String token, int accountFrom, int accountTo, BigDecimal amount){
+
+    public void createRequestTransfer(String token, int accountFrom, int accountTo, BigDecimal amount) {
         String endpoint = "/request";
 
         TransferRequest transferRequest = new TransferRequest();
@@ -78,7 +84,7 @@ public class TransferService {
         transferRequest.setAccountTo(accountTo);
         transferRequest.setAmount(amount);
 
-        makeAuthenticatedPostRequest(token,endpoint,transferRequest);
+        makeAuthenticatedPostRequest(token, endpoint, transferRequest);
         System.out.println("Request successfully created");
     }
 
@@ -107,6 +113,7 @@ public class TransferService {
             return true;
         }
     }
+
     public void processTransferDetails(int transferId, List<Transfer> transfers, String token) {
         Transfer selectedTransfer = null;
         for (Transfer transfer : transfers) {
@@ -132,6 +139,7 @@ public class TransferService {
             System.out.println("Transfer with ID " + transferId + " not found");
         }
     }
+
     public boolean displayPendingRequests(List<Transfer> transfers, String token) {
         if (transfers == null || transfers.isEmpty()) {
             System.out.println("You currently have no pending transfers");
@@ -149,6 +157,7 @@ public class TransferService {
             return true;
         }
     }
+
     private String getTransferType(int transferTypeId) {
         if (transferTypeId == 1) {
             return "Request";
@@ -156,6 +165,7 @@ public class TransferService {
             return "Send";
         }
     }
+
     private String getTransferStatus(int transferStatusId) {
         if (transferStatusId == 1) {
             return "Pending";
@@ -165,12 +175,14 @@ public class TransferService {
             return "Rejected";
         }
     }
+
     private HttpHeaders createAuthenticatedHeaders(String token) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.set("Authorization", "Bearer " + token);
         return httpHeaders;
     }
+
     public <T> List<T> makeAuthenticatedGetRequest(String token, String endpoint, Class<T[]> responseType, Object... uriVariables) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -187,6 +199,7 @@ public class TransferService {
 
         return Arrays.asList(responseEntity.getBody());
     }
+
     public void makeAuthenticatedPostRequest(String token, String endpoint, Object requestObject) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

@@ -19,16 +19,7 @@ public class JdbcTransferDao implements TransferDao{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-//    @Override
-//    public void createTransfer(Transfer transfer) {
-//        Transfer newTransfer = null;
-//        String sql = "INSERT INTO transfer (transfer_type_id,transfer_status_id, account_from, account_to, amount)VALUES (?, ?, ?, ?, ?)";
-//        try {
-//            jdbcTemplate.update(sql,transfer.getTransferTypeId(), transfer.getTransferStatusId(),transfer.getAccountFrom(),transfer.getAccountTo(),transfer.getAmount());
-//        }catch (CannotGetJdbcConnectionException e){
-//            throw new DaoException("Unable to connect to server or database", e);
-//        }
-//    }
+
 
     @Override
     public Transfer getTransferById(int transferId) {

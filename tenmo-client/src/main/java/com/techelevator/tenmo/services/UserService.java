@@ -18,9 +18,6 @@ public class UserService {
         String endpoint = "/{userId}";
         return makeAuthenticatedGetRequest(token,endpoint,User.class,userId);
     }
-    public int getUserIdByAccountId(String token, int accountId){
-        return accountService.getAccountByUserId(token,accountId).getUserId();
-    }
     public List<User> getUsers(String token, String username){
         String endpoint = "/list";
         return makeAuthenticatedGetRequestForList(token, endpoint, User[].class,username);
