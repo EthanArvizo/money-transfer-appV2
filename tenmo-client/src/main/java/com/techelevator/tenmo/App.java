@@ -4,6 +4,7 @@ import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.*;
 
 import java.math.BigDecimal;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -118,12 +119,19 @@ public class App {
         if (!hasTransfers) {
             return;
         }
+        try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter transfer ID to view details (0 to cancel): ");
+            int transferId = scanner.nextInt();
+            if (transferId == 0){
+                return;
+            }
+            transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
+        }catch (InputMismatchException e){
+            System.out.println("Please enter a proper ID value");
+        }
 
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter transfer ID to view details (0 to cancel): ");
-        int transferId = scanner.nextInt();
-        transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
 
     }
 
@@ -140,13 +148,20 @@ public class App {
             return;
         }
 
+        try {
+
+
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
         int transferId = scanner.nextInt();
 
+
         transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
         consoleService.printPendingRequestOptions();
         handleApprovalOrRejection(transferId);
+    }catch (InputMismatchException e){
+            System.out.println("Please enter a proper ID value");
+        }
 	}
 
 	private void sendBucks() {
