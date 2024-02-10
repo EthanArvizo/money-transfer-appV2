@@ -147,10 +147,7 @@ public class App {
         if (!hasPendingTransfers) {
             return;
         }
-
         try {
-
-
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
         int transferId = scanner.nextInt();

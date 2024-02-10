@@ -37,7 +37,7 @@ public class TransferController {
         transferDao.createTransferRequest(newTransfer);
         return "Transfer created successfully";
     }
-    @PostMapping("/send/{transferId}")
+    @PostMapping("/send")
     public String createSendTransfer(@Valid @RequestBody Transfer newTransfer){
         transferService.createSendTransfer(newTransfer);
         return "Transfer created successfully";
