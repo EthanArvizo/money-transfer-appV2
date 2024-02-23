@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.dto.TransferRequest;
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLoggerException;
@@ -18,6 +19,7 @@ public class TransferService {
     private final UserService userService = new UserService();
     private final AccountService accountService = new AccountService();
 
+
     public List<Transfer> getTransferByAccountId(String token, int accountId) {
         String endpoint = "/account/{accountId}";
         return makeAuthenticatedGetRequest(token, endpoint, Transfer[].class, accountId);
@@ -32,6 +34,7 @@ public class TransferService {
         return makeAuthenticatedGetRequest(token, endpoint, Transfer[].class, accountId);
     }
 
+
     public void denyTransfer(String token, int transferId) {
         String endpoint = "/deny/{transferId}";
 
@@ -45,15 +48,34 @@ public class TransferService {
         }
     }
 
-    public void acceptTransfer(String token, int transferId) {
+    public void acceptTransfer(String token, int userId, int transferId) {
         String endpoint = "/accept/{transferId}";
         HttpHeaders httpHeaders = createAuthenticatedHeaders(token);
         HttpEntity<Void> entity = new HttpEntity<>(httpHeaders);
         try {
-            restTemplate.postForEntity(API_TRANSFER_URL + endpoint, entity, Void.class, transferId);
-            System.out.println("Transfer accepted successfully!");
+            Account account = accountService.getAccountByUserId(token, userId);
+            int accountId = account.getAccountId();
+
+            List<Transfer> transferList = getPendingTransfers(token, accountId); // Assuming you have a method to get pending transfers
+
+            Transfer selectedTransfer = getTransferDetails(token, transferId, transferList);
+
+            if (selectedTransfer != null && selectedTransfer.getTransferStatusId() == 1) { // Check if the transfer is pending
+                BigDecimal transferAmount = selectedTransfer.getAmount();
+                int toUserId = accountService.getUserIdByAccountId(token, selectedTransfer.getAccountTo());
+                BigDecimal accountBalance = accountService.getBalanceByUserId(token, toUserId);
+
+                if (transferAmount.compareTo(accountBalance) <= 0) { // Check if the amount is less than or equal to the account balance
+                    restTemplate.postForEntity(API_TRANSFER_URL + endpoint, entity, Void.class, transferId);
+                    System.out.println("Transfer accepted successfully!");
+                } else {
+                    System.out.println("Transfer amount exceeds the current account balance. Transfer not accepted.");
+                }
+            } else {
+                System.out.println("Invalid transfer or transfer is not pending. Transfer not accepted.");
+            }
         } catch (Exception e) {
-            System.out.println("An error occurred while denying the transfer: " + e.getMessage());
+            System.out.println("An error occurred while accepting the transfer: " + e.getMessage());
         }
     }
 
@@ -86,6 +108,15 @@ public class TransferService {
 
         makeAuthenticatedPostRequest(token, endpoint, transferRequest);
         System.out.println("Request successfully created");
+    }
+
+    private Transfer getTransferDetails(String token, int transferId, List<Transfer> transfers) {
+        for (Transfer transfer : transfers) {
+            if (transfer.getTransferId() == transferId) {
+                return transfer;
+            }
+        }
+        return null;
     }
 
 

@@ -72,7 +72,7 @@ public class App {
         int userChoice = scanner.nextInt();
 
         if (userChoice == 1) {
-           transferService.acceptTransfer(currentUser.getToken(),transferId);
+           transferService.acceptTransfer(currentUser.getToken(),currentUser.getUser().getId(),transferId);
         } else if (userChoice == 2) {
             transferService.denyTransfer(currentUser.getToken(),transferId);
         } else {
@@ -170,16 +170,25 @@ public class App {
         int accountFrom = account.getAccountId();
         List<User> users = userService.getUsers(currentUser.getToken(), currentUser.getUser().getUsername());
         userService.displayUsers(users);
+        try {
+            System.out.println("Enter the user ID of who you want to send the transfer to (0 to cancel): ");
+            int userToId = scanner.nextInt();
 
-        System.out.println("Enter the user ID of who you want to send the transfer to (0 to cancel): ");
-        int userToId = scanner.nextInt();
-        Account account2 = accountService.getAccountByUserId(currentUser.getToken(),userToId);
-        int accountTo = account2.getAccountId();
+            if (userToId == userId) {
+                System.out.println("Cannot send money to your own account. Operation canceled.");
+                return;
+            }
 
-        System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
-        BigDecimal moneyAmount = scanner.nextBigDecimal();
-        transferService.createSendTransfer(currentUser.getToken(),accountFrom,accountTo,moneyAmount);
-	}
+            Account account2 = accountService.getAccountByUserId(currentUser.getToken(), userToId);
+            int accountTo = account2.getAccountId();
+
+            System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
+            BigDecimal moneyAmount = scanner.nextBigDecimal();
+            transferService.createSendTransfer(currentUser.getToken(), accountFrom, accountTo, moneyAmount);
+        }catch (InputMismatchException e){
+            System.out.println("Please enter a proper value for the request");
+        }
+    }
 
 	private void requestBucks() {
         Scanner scanner = new Scanner(System.in);
@@ -190,16 +199,27 @@ public class App {
         int accountFrom = account.getAccountId();
         List<User> users = userService.getUsers(currentUser.getToken(), currentUser.getUser().getUsername());
         userService.displayUsers(users);
+        try {
+            System.out.println("Enter the user ID of who you want to request the transfer to (0 to cancel): ");
+            int userToId = scanner.nextInt();
 
-        System.out.println("Enter the user ID of who you want to request the transfer to (0 to cancel): ");
-        int userToId = scanner.nextInt();
-        Account account2 = accountService.getAccountByUserId(currentUser.getToken(),userToId);
-        int accountTo = account2.getAccountId();
+            if (userToId == userId) {
+                System.out.println("Cannot send money to your own account. Operation canceled.");
+                return;
+            }
 
-        System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
-        BigDecimal moneyAmount = scanner.nextBigDecimal();
-        transferService.createRequestTransfer(currentUser.getToken(),accountFrom,accountTo,moneyAmount);
-		
-	}
+            Account account2 = accountService.getAccountByUserId(currentUser.getToken(), userToId);
+            int accountTo = account2.getAccountId();
+
+
+            System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
+            BigDecimal moneyAmount = scanner.nextBigDecimal();
+            transferService.createRequestTransfer(currentUser.getToken(), accountFrom, accountTo, moneyAmount);
+
+        } catch (InputMismatchException | NullPointerException e) {
+            System.out.println("Please enter a proper value for the request");
+
+        }
+    }
 
 }
