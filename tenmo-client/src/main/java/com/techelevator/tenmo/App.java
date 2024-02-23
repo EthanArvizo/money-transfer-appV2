@@ -151,6 +151,9 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter transfer ID to view details (0 to cancel): ");
         int transferId = scanner.nextInt();
+            if (transferId == 0){
+                return;
+            }
 
 
         transferService.processTransferDetails(transferId, transferList, currentUser.getToken());
@@ -173,6 +176,9 @@ public class App {
         try {
             System.out.println("Enter the user ID of who you want to send the transfer to (0 to cancel): ");
             int userToId = scanner.nextInt();
+            if (userToId == 0){
+                return;
+            }
 
             if (userToId == userId) {
                 System.out.println("Cannot send money to your own account. Operation canceled.");
@@ -184,8 +190,16 @@ public class App {
 
             System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
             BigDecimal moneyAmount = scanner.nextBigDecimal();
+            if (moneyAmount.compareTo(BigDecimal.ZERO) == 0){
+                return;
+            }
+
+            if (moneyAmount.compareTo(BigDecimal.ZERO) <= -1) {
+                System.out.println("Transfer amount must be a positive value. Transfer canceled.");
+                return;
+            }
             transferService.createSendTransfer(currentUser.getToken(), accountFrom, accountTo, moneyAmount);
-        }catch (InputMismatchException e){
+        }catch (InputMismatchException | NullPointerException e){
             System.out.println("Please enter a proper value for the request");
         }
     }
@@ -203,6 +217,10 @@ public class App {
             System.out.println("Enter the user ID of who you want to request the transfer to (0 to cancel): ");
             int userToId = scanner.nextInt();
 
+            if (userToId == 0){
+                return;
+            }
+
             if (userToId == userId) {
                 System.out.println("Cannot send money to your own account. Operation canceled.");
                 return;
@@ -214,7 +232,16 @@ public class App {
 
             System.out.println("Enter the amount you want to send in decimal form (0 to cancel): ");
             BigDecimal moneyAmount = scanner.nextBigDecimal();
+            if (moneyAmount.compareTo(BigDecimal.ZERO) == 0){
+                return;
+            }
+            if (moneyAmount.compareTo(BigDecimal.ZERO) <= -1) {
+                System.out.println("Transfer amount must be a positive value. Transfer canceled.");
+                return;
+            }
             transferService.createRequestTransfer(currentUser.getToken(), accountFrom, accountTo, moneyAmount);
+
+
 
         } catch (InputMismatchException | NullPointerException e) {
             System.out.println("Please enter a proper value for the request");
